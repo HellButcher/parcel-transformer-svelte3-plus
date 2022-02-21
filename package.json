@@ -1,0 +1,39 @@
+{
+  "name": "parcel-transformer-svelte3-plus",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "Christoph Hommelsheim <main@chommel.eu>",
+  "keywords": [
+    "svelte",
+    "svelte3",
+    "parcel",
+    "parcel-bundler",
+    "preprocess",
+    "svelte-preprocess",
+    "parcelv2",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HellButcher/parcel-transformer-svelte3-plus.git"
+  },
+  "engines": {
+    "node": ">=12",
+    "parcel": "^2.0.0"
+  },
+  "dependencies": {
+    "@parcel/diagnostic": "^2.3.2",
+    "@parcel/plugin": "^2.3.2",
+    "@parcel/source-map": "^2.0.2",
+    "@parcel/utils": "^2.3.2"
+  },
+  "peerDependencies": {
+    "svelte": "^3.44.0",
+    "svelte-preprocess": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "svelte-preprocess": {
+      "optional": true
+    }
+  }
+}
