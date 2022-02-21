@@ -14,6 +14,17 @@ Yarn
 yarn add --dev parcel-transformer-svelte3-plus svelte3
 ```
 
+Then add the transformer to the .parcelrc config
+
+```json
+{
+  "extends": "@parcel/config-default",
+  "transformers": {
+    "*.svelte": ["parcel-transformer-svelte3-plus"]
+  }
+}
+`
+
 ## [`svelte-preprocess`]
 
 When you want to use [`svelte-preprocess`]
