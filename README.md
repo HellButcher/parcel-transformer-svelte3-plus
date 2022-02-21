@@ -23,7 +23,7 @@ Then add the transformer to the .parcelrc config
     "*.svelte": ["parcel-transformer-svelte3-plus"]
   }
 }
-`
+```
 
 ## [`svelte-preprocess`]
 
