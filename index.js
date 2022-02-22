@@ -193,8 +193,8 @@ module.exports = new Transformer({
       logger.warn(convertDiagnostic(warning));
     });
 
-    return [
-      Boolean(compiled.js && compiled.js.code) && {
+    const results = [
+      {
         type: 'js',
         content: compiled.js.code,
         uniqueKey: `${asset.id}-js`,
@@ -204,8 +204,10 @@ module.exports = new Transformer({
             originalMap,
             compiled.js.map,
         ),
-      },
-      Boolean(compiled.css && compiled.css.code) && {
+      }
+    ];
+    if (compiled.css && compiled.css.code) {
+      results.push({
         type: 'css',
         content: compiled.css.code,
         uniqueKey: `${asset.id}-css`,
@@ -215,7 +217,8 @@ module.exports = new Transformer({
             originalMap,
             compiled.css.map,
         ),
-      },
-    ];
+      });
+    }
+    return results;
   },
 });
