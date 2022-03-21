@@ -21,7 +21,6 @@ const sveltePreprocess = (() => {
  */
 function extendSourceMap(projectRoot, filePath, originalMap, sourceMap) {
   if (!sourceMap) return originalMap;
-  sourceMap.sources = [filePath];
 
   const map = new SourceMap(projectRoot);
   map.addVLQMap(sourceMap);
