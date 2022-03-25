@@ -21,6 +21,7 @@ const sveltePreprocess = (() => {
  */
 function extendSourceMap(projectRoot, filePath, originalMap, sourceMap) {
   if (!sourceMap) return originalMap;
+  sourceMap.sources = [filePath];
 
   const map = new SourceMap(projectRoot);
   map.addVLQMap(sourceMap);
@@ -199,7 +200,7 @@ module.exports = new Transformer({
         uniqueKey: `${asset.id}-js`,
         map: extendSourceMap(
             options.projectRoot,
-            asset.filePath,
+            filename,
             originalMap,
             compiled.js.map,
         ),
@@ -212,7 +213,7 @@ module.exports = new Transformer({
         uniqueKey: `${asset.id}-css`,
         map: extendSourceMap(
             options.projectRoot,
-            asset.filePath,
+            filename,
             originalMap,
             compiled.css.map,
         ),
