@@ -2,8 +2,9 @@ const {Transformer} = require('@parcel/plugin');
 const {remapSourceLocation, relativeUrl} = require('@parcel/utils');
 const {default: ThrowableDiagnostic} = require('@parcel/diagnostic');
 const {default: SourceMap} = require('@parcel/source-map');
-
 const {compile, preprocess} = require('svelte/compiler');
+const path = require('path');
+
 const sveltePreprocess = (() => {
   try {
     return require('svelte-preprocess');
@@ -12,14 +13,14 @@ const sveltePreprocess = (() => {
   }
 })();
 
-function normalizeSourceMapPath(projectRoot, filePath, original) {
-  const fileBasename = filePath.split(/[/\\]/).pop();
-  if (original === fileBasename) {
-    return filePath;
-  } else if(original.startsWith("file://")) {
-    return relativeUrl(projectRoot,original.substring(7));
+function mapSourceMapPath(mapSourceRoot, sourcePath) {
+  if (sourcePath.startsWith("file://")) {
+    sourcePath = sourcePath.substring(7);
+  }
+  if (path.isAbsolute(sourcePath)) {
+    return sourcePath;
   } else {
-    return original;
+    return path.join(mapSourceRoot, sourcePath);
   }
 }
 
@@ -30,20 +31,18 @@ function normalizeSourceMapPath(projectRoot, filePath, original) {
  * @param {any} sourceMap
  * @return {?SourceMap}
  */
-function extendSourceMap(projectRoot, filePath, originalMap, sourceMap) {
+function extendSourceMap(options, filePath, originalMap, sourceMap) {
   if (!sourceMap) return originalMap;
-  if (sourceMap.sources.length === 1) {
-    sourceMap.sources = [filePath];
-  } else {
-    sourceMap.sources =  sourceMap.sources.map(source => normalizeSourceMapPath(projectRoot, filePath, source));
-  }
-  const map = new SourceMap(projectRoot);
-  map.addVLQMap(sourceMap);
+  let mapSourceRoot = path.dirname(filePath);
+  let map = new SourceMap(options.projectRoot);
+  map.addVLQMap({
+    ...sourceMap,
+    sources: sourceMap.sources.map(s => mapSourceMapPath(mapSourceRoot, s)),
+  });
 
   if (originalMap) {
     map.extends(originalMap);
   }
-
   return map;
 }
 
@@ -213,8 +212,8 @@ module.exports = new Transformer({
         content: compiled.js.code,
         uniqueKey: `${asset.id}-js`,
         map: extendSourceMap(
-            options.projectRoot,
-            filename,
+            options,
+            asset.filePath,
             originalMap,
             compiled.js.map,
         ),
@@ -226,8 +225,8 @@ module.exports = new Transformer({
         content: compiled.css.code,
         uniqueKey: `${asset.id}-css`,
         map: extendSourceMap(
-            options.projectRoot,
-            filename,
+            options,
+            asset.filePath,
             originalMap,
             compiled.css.map,
         ),
