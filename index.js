@@ -12,6 +12,17 @@ const sveltePreprocess = (() => {
   }
 })();
 
+function normalizeSourceMapPath(projectRoot, filePath, original) {
+  const fileBasename = filePath.split(/[/\\]/).pop();
+  if (original === fileBasename) {
+    return filePath;
+  } else if(original.startsWith("file://")) {
+    return relativeUrl(projectRoot,original.substring(7));
+  } else {
+    return original;
+  }
+}
+
 /**
  * @param {string} projectRoot
  * @param {string} filePath
@@ -21,8 +32,11 @@ const sveltePreprocess = (() => {
  */
 function extendSourceMap(projectRoot, filePath, originalMap, sourceMap) {
   if (!sourceMap) return originalMap;
-  sourceMap.sources = [filePath];
-
+  if (sourceMap.sources.length === 1) {
+    sourceMap.sources = [filePath];
+  } else {
+    sourceMap.sources =  sourceMap.sources.map(source => normalizeSourceMapPath(projectRoot, filePath, source));
+  }
   const map = new SourceMap(projectRoot);
   map.addVLQMap(sourceMap);
 
