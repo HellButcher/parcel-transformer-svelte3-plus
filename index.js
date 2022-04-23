@@ -53,15 +53,8 @@ module.exports = new Transformer({
         {packageKey: 'svelte'},
     );
     let contents = {};
-    if (conf) {
+    if (conf && typeof conf.contents === 'object') {
       contents = conf.contents;
-      if (typeof contents !== 'object') {
-        throw new ThrowableDiagnostic({
-          diagnostic: {
-            message: 'Svelte config should be an object.',
-          },
-        });
-      }
       if (conf.filePath.endsWith('.js')) {
         config.invalidateOnStartup();
       }
