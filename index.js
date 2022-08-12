@@ -62,8 +62,11 @@ module.exports = new Transformer({
 
     const compilerOptions = contents.compilerOptions || contents.compiler || {};
     let preprocess = contents.preprocess;
-    if (preprocess === undefined && sveltePreprocess != null) {
-      preprocess = [sveltePreprocess()];
+    if (preprocess === undefined) {
+      let spp = sveltePreprocess();
+      if (spp != null) {
+        preprocess = [spp];
+      }
     }
 
     return {
