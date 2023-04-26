@@ -90,6 +90,10 @@ module.exports = new Transformer({
       filename,
       ...config.compilerOptions || {},
     };
+    // similar fix like in https://github.com/sveltejs/language-tools/pull/1104
+    const isExternal = (filename.includes('/node_modules/') || filename.includes('\\node_modules\\')) &&
+      // Sapper convention: Put stuff inside node_modules below src
+      !(filename.includes('/src/node_modules/') || filename.includes('\\src\\node_modules\\'));
 
     const convertLoc = (loc) => {
       let location = {
@@ -197,10 +201,12 @@ module.exports = new Transformer({
       throw convertError(error);
     }
 
-    (compiled.warnings || []).forEach((warning) => {
-      if (compilerOptions.css && warning.code === 'css-unused-selector') return;
-      logger.warn(convertDiagnostic(warning));
-    });
+    if (compiled.warnings && !isExternal) {
+      compiled.warnings.forEach((warning) => {
+        if (compilerOptions.css && warning.code === 'css-unused-selector') return;
+        logger.warn(convertDiagnostic(warning));
+      });
+    }
 
     const results = [
       {
