@@ -1,5 +1,6 @@
 # parcel-transformer-svelte3-plus
-Svelte3 Transformer for Parcel V2
+Svelte3 Transformer for Parcel V2.
+Also works with [Svelte 4](#svelte-4).
 
 # Installation
 
@@ -62,6 +63,19 @@ module.exports = {
     sveltePreprocess(),
   ]
 };
+```
+
+## Svelte 4
+
+Svelte 4 was restructured to be importable exclusively by [package exports](https://parceljs.org/features/dependency-resolution/#package-exports), which Parcel doesn't support by default.
+You can enable *packageExports* for parcel with the following configuration in your `package.json`:
+
+```json
+{
+  "@parcel/resolver-default": {
+    "packageExports": true
+  }
+}
 ```
 
 # License

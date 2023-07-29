@@ -2,7 +2,7 @@ const {Transformer} = require('@parcel/plugin');
 const {remapSourceLocation, relativeUrl} = require('@parcel/utils');
 const {default: ThrowableDiagnostic} = require('@parcel/diagnostic');
 const {default: SourceMap} = require('@parcel/source-map');
-const {compile, preprocess} = require('svelte/compiler');
+const {compile, preprocess, VERSION} = require('svelte/compiler');
 const path = require('path');
 
 const sveltePreprocess = (() => {
@@ -60,12 +60,18 @@ module.exports = new Transformer({
       }
     }
 
-    const compilerOptions = contents.compilerOptions || contents.compiler || {};
+    let compilerOptions = contents.compilerOptions || contents.compiler || {};
     let preprocess = contents.preprocess;
     if (preprocess === undefined) {
-      let spp = sveltePreprocess();
-      if (spp != null) {
-        preprocess = [spp];
+      if (sveltePreprocess != null) {
+        preprocess = [sveltePreprocess()];
+      }
+    }
+
+    if (VERSION[0] === '3') {
+      compilerOptions = {
+        format: 'esm',
+        ...compilerOptions,
       }
     }
 
@@ -73,7 +79,6 @@ module.exports = new Transformer({
       compilerOptions: {
         dev: options.mode !== 'production',
         css: false,
-        format: 'esm',
         ...compilerOptions,
       },
       preprocess,
